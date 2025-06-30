@@ -3,35 +3,33 @@
 This repository provides the code to construct the `HORIZON benchmark` — a large-scale, cross-domain benchmark built by refactoring the popular **Amazon-Reviews 2023 datase**t for evaluating sequential recommendation and user behavior modeling.
 We do not release any new data; instead, we share reproducible scripts and guidelines to regenerate the benchmark, enabling rigorous evaluation of generalization across time, unseen users, and long user histories. The benchmark supports modern research needs by focusing on temporal robustness, out-of-distribution generalization, and long-horizon user modeling beyond next-item prediction.
 
-## 1. Transparency  
-
-### Overview 
+## Overview 
 
 HORIZON is a benchmark for in-the-wild user modeling in the e-commerce domain. This repository provides the necessary code to load a publicly available dataset, process it to create a benchmark, and then run a diverse set of user modeling algorithms on the benchmark. The publicly available dataset was collected from amazon.com, likely representing users from the United States.   
 
-### Objective 
+## Objective 
 
 Our objective is to provide a standardized testbed for user modeling.  
 
-### Audience 
+## Audience 
 
 HORIZON benchmark is intended for researchers, AI practitioners, and industry professionals who are interested in evaluating user modeling algorithms. 
 
-### Intended Uses 
+## Intended Uses 
 
 HORIZON benchmark can be used as a standardized evaluation platform to evaluate performance of both existing and new algorithms. Our results may be most useful for settings involving products in similar categories to the dataset we used. For a list of these 33 categories, see https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/blob/main/all_categories.txt. 
 
-### Out of Scope Uses 
+## Out of Scope Uses 
 
 HORIZON benchmark is not intended to be used to circumvent any policies adopted by LLM providers. 
 
 The user modeling algorithms provided in HORIZON are for e-commerce product scenarios only and may not translate to other kinds of products or buying behavior. 
 
-### Evaluation 
+## Evaluation 
 
 We have evaluated many state-of-the-art algorithms on the HORIZON benchmark. For details, please refer to the accompanying [Arxiv paper](TBD). 
 
-### Limitations 
+## Limitations 
 
 - HORIZON provides an offline evaluation. In real-world applications, offline evaluation results may differ from online evaluation that involves deploying a user modeling algorithm. 
 
@@ -39,16 +37,16 @@ We have evaluated many state-of-the-art algorithms on the HORIZON benchmark. For
 
 - The accuracy of HORIZON evaluation metrics for a real-world application depends on the diversity and representativeness of the underlying data.
 
-### Usage 
+## Usage 
 
 This project is primarily designed for research and experimental purposes. We strongly recommend conducting further testing and validation before considering its application in industrial or real-world scenarios. 
 
-### Feedback and Collaboration 
+## Feedback and Collaboration 
 
 We welcome feedback and collaboration from our audience. If you have suggestions, questions, or would like to contribute to the project, please feel free to raise an [issue](https://github.com/microsoft/horizon-benchmark/issues) or add a [pull request](https://github.com/microsoft/horizon-benchmark/pulls) 
 
 ---
-## 2. HORIZON Benchmark Construction
+## HORIZON Benchmark Construction
 
 ### a. Curating the Full Dataset:
 The scripts for constructing the `HORIZON` benchmark are provided in the `data` folder. Follow the following steps to reproduce the benchmark:
