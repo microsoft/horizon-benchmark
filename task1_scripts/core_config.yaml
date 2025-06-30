@@ -1,0 +1,98 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Phase 1 & 2 Combined: Train, Validate, AND Test SASRec on IND data
+# Input files: train_ind_sampled.inter, val_ind_sampled.inter, test_ind_sampled.inter
+# Output:
+#   - Saved model checkpoint based on best val_ind performance
+#   - Console/Log output including metrics on test_ind_sampled.inter
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Basic settings
+model: CORE
+dataset: azrec # Directory containing the .inter files
+data_path: /home/aiscuser/
+
+# --- Data Settings ---
+# benchmark_filename: [train_ind_sampled, val_ind_sampled, test_ind_sampled]
+# alias_of_item_id: [item_id_list]
+load_col:
+  inter: [user_id, item_id, timestamp]
+  item: [item_id]
+field_separator: "\t"
+seq_separator: " "
+
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+
+
+embedding_size: 256   # item embedding dimension 
+inner_size: 256        # GRU hidden state size 
+n_layers: 3         # number of GRU layers 
+n_heads: 4         # number of attention heads 
+hidden_dropout_prob: 0.15          # number of attention heads
+attn_dropout_prob: 0.15
+hidden_act: 'gelu'        
+        
+        # use 'BPR' instead for pairwise loss (requires train_neg_sample_args) :contentReference[oaicite:16]{index=16}
+
+
+# If using BPR loss, uncomment and adjust:
+# train_neg_sample_args: {'distribution': 'uniform', 'sample_num': 1}  # negative sampling for BPR :contentReference[oaicite:17]{index=17}
+
+# --- Training Settings ---
+epochs: 10
+train_batch_size: 4096
+learning_rate: 0.00002
+stopping_step: 10
+# # train_neg_sample_args: {distribution: 'uniform', sample_num: 10}
+valid_neg_sample_args: {distribution: 'uniform', sample_num: 20}
+test_neg_sample_args: {distribution: 'uniform', sample_num: 10}
+train_neg_sample_args: ~
+#   # dynamic: True
+#   # candidate_num: 100
+loss_type: 'CE' 
+MAX_ITEM_LIST_LENGTH: 100
+
+# epochs: 10             # Maximum number of training epochs
+# train_batch_size: 8192   # Adjust based on GPU memory
+# learning_rate: 0.00002    # Starting learning rate (tune this)
+# stopping_step: 10       # Patience for early stopping
+# train_neg_sample_args: {'distribution': 'uniform', 'sample_num': 10, 'dynamic': false}
+# val_neg_sample_args: {'distribution': 'uniform', 'sample_num': 10, 'dynamic': false}
+# test_neg_sample_args: {'distribution': 'uniform', 'sample_num': 100, 'dynamic': false}
+# loss_type: BPR
+
+
+# --- Evaluation Settings ---
+eval_args:
+  group_by: user
+  order: 'TO'
+  split: {'LS': 'valid_and_test'}
+  mode: full
+eval_batch_size: 512
+metrics: ['Recall', 'MRR', 'NDCG', 'Precision']
+topk: 10
+valid_metric: MRR@10
+metric_decimal_place: 6
+
+# --- Experiment Settings ---
+reproducible: True
+seed: 2025
+device: cuda
+
+# --- Multi‑GPU Settings ---
+worker: 0
+gpu_id: "4,5"       
+use_gpu: True
+
+# Mixed precision
+enable_amp: False
+enable_scaler: True
+
+# --- Logging Settings ---
+log_level: DEBUG
+log_file: core_v2.log
+
+# --- Checkpoint & Saving ---
+save_best_model: True
+checkpoint_dir: /home/aiscuser/final_ckpts/
+ 

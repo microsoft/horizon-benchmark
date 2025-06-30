@@ -1,0 +1,80 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Phase 1 & 2 Combined: Train, Validate, AND Test GRU4Rec on IND data
+# Input files: train_ind_sampled.inter, val_ind_sampled.inter, test_ind_sampled.inter
+# Output:
+#   - Saved model checkpoint based on best val_ind performance
+#   - Console/Log output including metrics on test_ind_sampled.inter
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Basic settings
+model: GRU4Rec
+dataset: azrec  # Directory containing the .inter files
+data_path: /home/aiscuser/
+
+# --- Data Settings ---
+# dataset config : Sequential Recommendation
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+load_col:
+    inter: [user_id, item_id,timestamp]
+    item: [item_id]
+    
+ITEM_LIST_LENGTH_FIELD: item_length
+LIST_SUFFIX: _list
+MAX_ITEM_LIST_LENGTH: 100
+
+
+# --- Sequential Model Specific Settings (GRU4Rec) ---
+embedding_size: 256      # item embedding dimension :contentReference[oaicite:12]{index=12}
+hidden_size: 256        # GRU hidden state size :contentReference[oaicite:13]{index=13}
+num_layers: 3           # number of GRU layers :contentReference[oaicite:14]{index=14}
+dropout_prob: 0.15       # dropout between GRU layers :contentReference[oaicite:15]{index=15}
+
+# If using BPR loss, uncomment and adjust:
+# train_neg_sample_args: {'distribution': 'uniform', 'sample_num': 1}  # negative sampling for BPR :contentReference[oaicite:17]{index=17}
+
+# --- Training Settings ---
+epochs: 10             # Maximum number of training epochs
+train_batch_size: 8192   # Adjust based on GPU memory
+learning_rate: 0.00002    # Starting learning rate (tune this)
+stopping_step: 10       # Patience for early stopping
+train_neg_sample_args: {'distribution': 'uniform', 'sample_num': 10, 'dynamic': false}
+val_neg_sample_args: {'distribution': 'uniform', 'sample_num': 20, 'dynamic': false}
+test_neg_sample_args: {'distribution': 'uniform', 'sample_num': 100, 'dynamic': false}
+loss_type: BPR
+
+# --- Evaluation Settings ---
+eval_args:
+    order: TO
+    split:
+        LS: valid_and_test
+
+eval_batch_size: 256    # Batch size for validation and testing
+metrics: [Recall, MRR, NDCG, Precision] # Metrics computed for validation and test
+topk: [10, 20, 50, 100]             # K values used for validation and final test reports (Added 50)
+valid_metric: MRR@10             # Metric used for early stopping and selecting the best model (based on val_ind performance)
+metric_decimal_place: 6
+
+
+# --- Experiment Settings ---
+reproducible: true
+seed: 2025
+device: cuda
+
+# --- Multi‑GPU Settings ---
+worker: 0
+gpu_id: "2,3"       
+use_gpu: true
+
+# Mixed precision
+enable_amp: False
+enable_scaler: True
+
+# --- Logging Settings ---
+log_level: DEBUG
+log_file: gru4rec_V2.log
+
+# --- Checkpoint & Saving ---
+save_best_model: True
+checkpoint_dir: /home/aiscuser/final_ckpts/

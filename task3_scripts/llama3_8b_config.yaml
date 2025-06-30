@@ -1,0 +1,13 @@
+# config.yaml
+
+input_json: "splits/ood_test_users.json"
+sqlite_db: "amazon_parquet_data/metadata_titles.db"
+output_path: "long_horizon_experiments/llama3-8b-test_full_long_horizon.jsonl"
+is_ood: false
+
+model:
+  name: "meta-llama/Llama-3.1-8B-instruct"
+  num_gpus: 4
+  temperature: 0.7
+  top_p: 0.95
+  max_tokens: 350

@@ -1,0 +1,13 @@
+# config.yaml
+
+input_json: "splits/ood_test_users.json"
+sqlite_db: "amazon_parquet_data/metadata_titles.db"
+output_path: "llm_experiments/qwen3-8b-test_full.jsonl"
+is_ood: false
+
+model:
+  name: "Qwen/Qwen3-8B"
+  num_gpus: 4
+  temperature: 0.7
+  top_p: 0.8
+  max_tokens: 220
